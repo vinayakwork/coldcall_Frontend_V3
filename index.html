@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Cold Call Generator</title>
+</head>
+<body>
+  <h2>Company Analyzer</h2>
+
+  <input id="url" placeholder="Enter company URL" style="width:400px" />
+  <button onclick="analyze()">Analyze</button>
+
+  <pre id="output"></pre>
+
+  <script>
+    async function analyze() {
+      const url = document.getElementById("url").value;
+      document.getElementById("output").innerText = "Analyzing...";
+
+      const res = await fetch("https://YOUR_BACKEND_URL/analyze", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url })
+      });
+
+      const data = await res.json();
+      document.getElementById("output").innerText = data.result;
+    }
+  </script>
+</body>
+</html>
