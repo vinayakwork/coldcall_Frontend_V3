@@ -29,7 +29,8 @@
       output = output[0].text;
     }
     // 👇 FIX HERE
-    document.getElementById("output").innerText = output;
+    // document.getElementById("output").innerText = output;
+    document.getElementById("output").innerText =JSON.stringify(data, null, 2);
   }
 </script>
 
