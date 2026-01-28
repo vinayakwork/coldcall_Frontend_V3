@@ -23,7 +23,11 @@
     });
 
     const data = await res.json();
+     let output = data.result;
 
+    if (Array.isArray(output) && output[0]?.text) {
+      output = output[0].text;
+    }
     // 👇 FIX HERE
     document.getElementById("output").innerText =
       typeof data.result === "string"
