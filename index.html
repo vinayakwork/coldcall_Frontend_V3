@@ -12,19 +12,25 @@
   <pre id="output"></pre>
 
   <script>
-    async function analyze() {
-      const url = document.getElementById("url").value;
-      document.getElementById("output").innerText = "Analyzing...";
+  async function analyze() {
+    const url = document.getElementById("url").value;
+    document.getElementById("output").innerText = "Analyzing...";
 
-      const res = await fetch("https://coldcall-backend-v3.vercel.app/analyze", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url })
-      });
+    const res = await fetch("https://YOUR_BACKEND_URL/analyze", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ url })
+    });
 
-      const data = await res.json();
-      document.getElementById("output").innerText = data.result;
-    }
-  </script>
+    const data = await res.json();
+
+    // 👇 FIX HERE
+    document.getElementById("output").innerText =
+      typeof data.result === "string"
+        ? data.result
+        : JSON.stringify(data.result, null, 2);
+  }
+</script>
+
 </body>
 </html>
