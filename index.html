@@ -29,10 +29,7 @@
       output = output[0].text;
     }
     // 👇 FIX HERE
-    document.getElementById("output").innerText =
-      typeof data.result === "string"
-        ? data.result
-        : JSON.stringify(data.result, null, 2);
+    document.getElementById("output").innerText = output;
   }
 </script>
 
