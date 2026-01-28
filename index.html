@@ -25,13 +25,18 @@
     const data = await res.json();
      let output = data.result;
 
-    if (Array.isArray(output) && output[0]?.text) {
-      output = output[0].text;
-    }
-    // 👇 FIX HERE
-    // document.getElementById("output").innerText = output;
-    document.getElementById("output").innerText =JSON.stringify(data, null, 2);
-  }
+   const companyText =
+    data.result?.company_analysis?.[0]?.text || "No company analysis found";
+
+  const condenseText =
+    data.result?.condense_analysis?.[0]?.text || "No condense analysis found";
+
+  document.getElementById("output").innerText =
+    "=== COMPANY ANALYSIS ===\n\n" +
+    companyText +
+    "\n\n=== CONDENSE FIT ===\n\n" +
+    condenseText;
+}
 </script>
 
 </body>
