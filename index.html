@@ -16,7 +16,7 @@
       const url = document.getElementById("url").value;
       document.getElementById("output").innerText = "Analyzing...";
 
-      const res = await fetch("https://coldcall-backend-v3.vercel.app//analyze", {
+      const res = await fetch("https://coldcall-backend-v3.vercel.app/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ url })
