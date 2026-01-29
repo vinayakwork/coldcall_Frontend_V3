@@ -2,40 +2,80 @@
 <html>
 <head>
   <title>Cold Call Generator</title>
+  <style>
+    body { font-family: Arial; padding: 40px; }
+    input { width: 400px; padding: 8px; }
+    button { padding: 8px 12px; margin-right: 10px; }
+    pre { margin-top: 20px; white-space: pre-wrap; }
+  </style>
 </head>
 <body>
-  <h2>Company Analyzer</h2>
 
-  <input id="url" placeholder="Enter company URL" style="width:400px" />
-  <button onclick="analyze()">Analyze</button>
+<h2>Company Analyzer</h2>
 
-  <pre id="output"></pre>
+<input id="url" placeholder="Enter company URL" />
+<br><br>
 
-  <script>
-  async function analyze() {
-    const url = document.getElementById("url").value;
-    document.getElementById("output").innerText = "Analyzing...";
+<button onclick="analyze()">Analyze</button>
+<button onclick="showCondense()" id="condenseBtn" style="display:none;">
+  Condense Fit
+</button>
 
-    const res = await fetch("https://coldcall-backend-v3.vercel.app/analyze", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ url })
-    });
+<pre id="output"></pre>
 
-    const data = await res.json();
-     let output = data.result;
+<script>
+let apiResponse = null;
 
-   const companyText =
-    data.result?.company_analysis?.[0]?.text || "No company analysis found";
+// ✅ CACHE OBJECT
+const cache = {};
 
-  const condenseText =
-    data.result?.condense_analysis?.[0]?.text || "No condense analysis found";
+async function analyze() {
+  const url = document.getElementById("url").value.trim();
+  if (!url) return;
+
+  document.getElementById("output").innerText = "Analyzing...";
+  document.getElementById("condenseBtn").style.display = "none";
+
+  // ✅ USE CACHE IF URL EXISTS
+  if (cache[url]) {
+    apiResponse = cache[url];
+    showCompany();
+    return;
+  }
+
+  // ❌ HIT BACKEND ONLY IF NOT CACHED
+  const res = await fetch("https://coldcall-backend-v3.vercel.app/analyze", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ url })
+  });
+
+  apiResponse = await res.json();
+
+  // ✅ SAVE TO CACHE
+  cache[url] = apiResponse;
+
+  showCompany();
+}
+
+function showCompany() {
+  const companyText =
+    apiResponse.result?.company_analysis?.[0]?.text || "No company analysis";
 
   document.getElementById("output").innerText =
-    "=== COMPANY ANALYSIS ===\n\n" +
-    companyText +
-    "\n\n=== CONDENSE FIT ===\n\n" +
-    condenseText;
+    "=== COMPANY ANALYSIS ===\n\n" + companyText;
+
+  document.getElementById("condenseBtn").style.display = "inline-block";
+}
+
+function showCondense() {
+  if (!apiResponse) return;
+
+  const condenseText =
+    apiResponse.result?.condense_analysis?.[0]?.text || "No condense analysis";
+
+  document.getElementById("output").innerText =
+    "=== CONDENSE FIT ===\n\n" + condenseText;
 }
 </script>
 
