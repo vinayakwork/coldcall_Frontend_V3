@@ -20,7 +20,9 @@
 <button onclick="showCondense()" id="condenseBtn" style="display:none;">
   Condense Fit
 </button>
-
+<button onclick="showSales()" id="SalesBtn" style="display:none;">
+  Sales Guidance
+</button>
 <pre id="output"></pre>
 
 <script>
@@ -35,7 +37,7 @@ async function analyze() {
 
   document.getElementById("output").innerText = "Analyzing...";
   document.getElementById("condenseBtn").style.display = "none";
-
+  document.getElementById("SalesBtn").style.display="none";
   // ✅ USE CACHE IF URL EXISTS
   if (cache[url]) {
     apiResponse = cache[url];
@@ -44,7 +46,7 @@ async function analyze() {
   }
 
   // ❌ HIT BACKEND ONLY IF NOT CACHED
-  const res = await fetch("https://coldcall-backend-v3.vercel.app/analyze", {
+  const res = await fetch("http://127.0.0.1:8000/analyze", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ url })
@@ -76,6 +78,16 @@ function showCondense() {
 
   document.getElementById("output").innerText =
     "=== CONDENSE FIT ===\n\n" + condenseText;
+    document.getElementById("SalesBtn").style.display = "inline-block";
+}
+function showSales() {
+  if (!apiResponse) return;
+
+  const salestext=
+    apiResponse.result?.sales_guidance?.[0]?.text || "No sales analysis";
+
+  document.getElementById("output").innerText =
+    "===Sales  ===\n\n" + salestext;
 }
 </script>
 
