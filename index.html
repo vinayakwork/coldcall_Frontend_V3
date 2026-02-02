@@ -2,13 +2,68 @@
 <html>
 <head>
   <title>Cold Call Generator</title>
+
+  <!-- Markdown Renderer -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
   <style>
-    body { font-family: Arial; padding: 40px; }
-    input { width: 400px; padding: 8px; }
-    button { padding: 8px 12px; margin-right: 10px; }
-    pre { margin-top: 20px; white-space: pre-wrap; }
+    body {
+      background-color: black;
+      color: white;
+      font-family: Arial, sans-serif;
+      padding: 40px;
+    }
+
+    input {
+      width: 400px;
+      padding: 8px;
+      background: black;
+      color: aqua;
+      border: 1px solid aqua;
+    }
+
+    button {
+      padding: 8px 12px;
+      margin-right: 10px;
+      background: black;
+      color: white;
+      border: 1px solid aqua;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: aqua;
+      color: black;
+    }
+
+    .output {
+      margin-top: 25px;
+      line-height: 1.7;
+      font-size: 14px;
+    }
+
+    .output h3 {
+      margin-top: 20px;
+      color: #7fffd4;
+    }
+
+    .output ul {
+      margin-left: 20px;
+    }
+
+    .output strong {
+      font-weight: 600;
+      color: #b2ffff;
+    }
+
+    .output hr {
+      border: none;
+      border-top: 1px solid aqua;
+      margin: 20px 0;
+    }
   </style>
 </head>
+
 <body>
 
 <h2>Company Analyzer</h2>
@@ -23,71 +78,67 @@
 <button onclick="showSales()" id="SalesBtn" style="display:none;">
   Sales Guidance
 </button>
-<pre id="output"></pre>
+
+<div id="output" class="output"></div>
 
 <script>
 let apiResponse = null;
-
-// ✅ CACHE OBJECT
 const cache = {};
+const BACKEND_URL = "https://coldcall-backend-v3.vercel.app/analyze";
 
 async function analyze() {
   const url = document.getElementById("url").value.trim();
   if (!url) return;
 
-  document.getElementById("output").innerText = "Analyzing...";
+  document.getElementById("output").innerHTML = "<em>Analyzing...</em>";
   document.getElementById("condenseBtn").style.display = "none";
-  document.getElementById("SalesBtn").style.display="none";
-  // ✅ USE CACHE IF URL EXISTS
+  document.getElementById("SalesBtn").style.display = "none";
+
   if (cache[url]) {
     apiResponse = cache[url];
     showCompany();
     return;
   }
 
-  // ❌ HIT BACKEND ONLY IF NOT CACHED
-  const res = await fetch("https://coldcall-backend-v3.vercel.app/analyze", {
+  const res = await fetch(BACKEND_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ url })
   });
 
   apiResponse = await res.json();
-
-  // ✅ SAVE TO CACHE
   cache[url] = apiResponse;
 
   showCompany();
 }
 
 function showCompany() {
-  const companyText =
+  const text =
     apiResponse.result?.company_analysis?.[0]?.text || "No company analysis";
 
-  document.getElementById("output").innerText =
-    "=== COMPANY ANALYSIS ===\n\n" + companyText;
+  document.getElementById("output").innerHTML =
+    marked.parse(text);
 
   document.getElementById("condenseBtn").style.display = "inline-block";
+  document.getElementById("SalesBtn").style.display = "none";
 }
 
 function showCondense() {
-  if (!apiResponse) return;
-
-  const condenseText =
+  const text =
     apiResponse.result?.condense_analysis?.[0]?.text || "No condense analysis";
 
-  document.getElementById("output").innerText =
-    "=== CONDENSE FIT ===\n\n" + condenseText;
-    document.getElementById("SalesBtn").style.display = "inline-block";
-}
-function showSales() {
-  if (!apiResponse) return;
+  document.getElementById("output").innerHTML =
+    marked.parse(text);
 
-  const salestext=
+  document.getElementById("SalesBtn").style.display = "inline-block";
+}
+
+function showSales() {
+  const text =
     apiResponse.result?.sales_guidance?.[0]?.text || "No sales analysis";
 
-  document.getElementById("output").innerText =
-    "===Sales  ===\n\n" + salestext;
+  document.getElementById("output").innerHTML =
+    marked.parse(text);
 }
 </script>
 
