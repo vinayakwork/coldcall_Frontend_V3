@@ -114,7 +114,7 @@ async function analyze() {
 
 function showCompany() {
   const text =
-    apiResponse.result?.company_analysis?.[0]?.text || "No company analysis";
+    apiResponse.result?.company_analysis || "No company analysis";
 
   document.getElementById("output").innerHTML =
     marked.parse(text);
@@ -125,7 +125,7 @@ function showCompany() {
 
 function showCondense() {
   const text =
-    apiResponse.result?.condense_analysis?.[0]?.text || "No condense analysis";
+    apiResponse.result?.condense_analysis || "No condense analysis";
 
   document.getElementById("output").innerHTML =
     marked.parse(text);
@@ -135,7 +135,7 @@ function showCondense() {
 
 function showSales() {
   const text =
-    apiResponse.result?.sales_guidance?.[0]?.text || "No sales analysis";
+    apiResponse.result?.sales_guidance || "No sales guidance";
 
   document.getElementById("output").innerHTML =
     marked.parse(text);
